@@ -21,3 +21,6 @@ recap:
 	git commit -m 'message'
 	git push
 
+To pull/get files off the repo:
+	
+	git pull
