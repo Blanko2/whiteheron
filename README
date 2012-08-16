@@ -1,0 +1,26 @@
+To get this repository: 
+	git clone file:///vol/projects/engr302_2012T2/e302t9/white-heron.git
+should give you an output that doesnt mention an empty repository, should
+add a file to the repo called README (which is this file).
+
+check youre on the right branch:
+	git branch
+Output should be *master
+
+To commit and push a file:
+	git add . //adds all files in the dir to git's tracker
+	git commit -m 'my commit message'
+That will have committed your files, but you still need to push!
+	git push
+that should be all.
+
+recap:
+	git clone <repo location>
+	<add files, whatever>
+	git add .
+	git commit -m 'message'
+	git push
+
+To pull/get files off the repo:
+	
+	git pull
