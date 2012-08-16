@@ -1,0 +1,6 @@
+package riverObjects;
+
+public class ImageShape {
+	private Polygon polygon;
+	private Color color;
+}
