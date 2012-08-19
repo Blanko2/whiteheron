@@ -2,15 +2,24 @@ package modules;
 
 import java.awt.image.BufferedImage;
 
+/**
+ * Module that performs color quantization of
+ * an image.
+ */
 public class ColorQuantization implements Module {
     public static final int MASK = 0xff808080; // mask used for quantization, keeps the highest bit of R, G and B
     private BufferedImage original;
+    
+    public ColorQuantization(BufferedImage img) {
+        original = img;
+    }
 
 	/**
 	 * Applies color quantization to the original image,
 	 * utilizing the constant mask defined in this class.
+	 * 
+	 * @return quantized image
 	 */
-    @Override
 	public BufferedImage getImage() {
 	    int w = original.getWidth();
         int h = original.getHeight();

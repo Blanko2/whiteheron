@@ -1,5 +1,7 @@
 package main;
 
+import pipeline.Pipeline;
+
 public class Main {
 
 	/**
@@ -8,8 +10,7 @@ public class Main {
 	 * @param images -- batch of images to be checked
 	 */
 	public static void main(String[] images) {
-		// TODO Auto-generated method stub
-
+	    new Pipeline(images).renderRiverBoundaries();
 	}
 
 }
