@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 
 import modules.ColorPaintover;
 import modules.ColorQuantization;
+import modules.EdgeMajority;
 import riverObjects.River;
 
 public class Pipeline {
@@ -109,6 +110,16 @@ public class Pipeline {
                 paintOver.setOldColor( notRiverColors );
                 BufferedImage paintedImg = paintOver.getImage();
                 
+                //==========================================================
+                //             REMOVAL OF EDGE MAJORITY COLOR
+                //==========================================================
+                /* The most common color around the edge of the picture is
+                 * not likely to be a river, so remove it from the picture,
+                 * replacing it with white (if majority is not white 
+                 * already) */
+                 
+                EdgeMajority majority = new EdgeMajority(paintedImg);
+                paintedImg = majority.getImage();
                 
                 //==========================================================
                 //				SHAPE FINDER
