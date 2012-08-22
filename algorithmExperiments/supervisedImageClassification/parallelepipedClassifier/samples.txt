@@ -1,0 +1,6 @@
+# Samples for the classes for the simple Landsat classification example: 
+# see http://www.lac.inpe.br/JIPCookbook/7020-tutorial-supervisedclassification.jsp
+# Samples for Water (class #1)
+1 766 8 68 45
+1 751 207 78 126
+1 565 719 91 91

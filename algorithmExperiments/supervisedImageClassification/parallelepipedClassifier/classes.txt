@@ -1,0 +1,3 @@
+# Classes definition for the simple Landsat classification example: 
+# see http://www.lac.inpe.br/JIPCookbook/7020-tutorial-supervisedclassification.jsp
+1 0 0 255 Water
