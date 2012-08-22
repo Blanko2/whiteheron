@@ -16,18 +16,31 @@ import modules.ColorQuantization;
 import riverObjects.River;
 
 public class Pipeline {
+	//declaring quantization colors
+	Color quantBlack 	= new Color (0, 0, 0);
+	Color quantGrey 	= new Color (128,128,128);
+	Color quantRed 		= new Color (128,0,0);
+	Color quantGreen 	= new Color (0,128,0);
+	Color quantBlue		= new Color (0,0,128);
+	Color quantYello 	= new Color (128,128,0);
+	Color quantPurp 	= new Color (128,0,128);
+	Color quantAqua		= new Color (0,128,128);
+	
+	Color[] RiverCols 	= {quantBlack, quantBlue, quantAqua};
+	Color[] notRiver	= {quantRed, quantGreen, quantYello, quantPurp, quantGrey};
+	
     private String[] originalNames;
-    private List< BufferedImage > originals;
+    private ArrayList< BufferedImage > originals;
 
     public Pipeline( String[] imageNames ) {
         originalNames = imageNames;
-        
+        originals = new ArrayList<BufferedImage>();
         // Proceed if there are image names
         if ( imageNames != null && imageNames.length > 0 ) {
             try {
                 // Read all original images into a list
                 for ( String name : imageNames ) {
-                    originals.add( ImageIO.read( new File( name ) ) );
+                	originals.add( ImageIO.read( new File( name ) ) );
                 }
             }
             catch ( IOException e ) {
@@ -88,18 +101,27 @@ public class Pipeline {
                 //==========================================================
                 // Create list of colors that are not rivers
                 List<Color> notRiverColors = new ArrayList<Color>();
-                notRiverColors.add( new Color(128, 0, 0) ); // Red
-                notRiverColors.add( new Color(0, 128, 0) ); // Green
-                notRiverColors.add( new Color(128, 128, 0) ); // Yellow/golden
-                notRiverColors.add( new Color(128, 0, 128) ); // Purple
-                
+                for(int i=0; i<notRiver.length; i++){
+                	notRiverColors.add( notRiver[i] ); // XXX needs testing
+                }
                 ColorPaintover paintOver = new ColorPaintover(quantImg);
                 paintOver.setNewColor( Color.WHITE );
                 paintOver.setOldColor( notRiverColors );
                 BufferedImage paintedImg = paintOver.getImage();
                 
-                // TODO: Continue algorithm
                 
+                //==========================================================
+                //				SHAPE FINDER
+                //==========================================================
+                
+                
+                // TODO: Continue algorithm
+                try {
+					ImageIO.write(paintedImg, "png", new File("painted.png"));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         }
         
