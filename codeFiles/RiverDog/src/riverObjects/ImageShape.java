@@ -13,4 +13,17 @@ import java.awt.Polygon;
 public class ImageShape {
 	private Polygon polygon;
 	private Color color;
+	
+	public ImageShape(Polygon boundaries, Color c) {
+		polygon = boundaries;
+		color = c;
+	}
+	
+	public Polygon getPolygon() {
+		return polygon;
+	}
+	
+	public Color getColor() {
+		return color;
+	}
 }
