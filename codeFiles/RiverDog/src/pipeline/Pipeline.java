@@ -103,7 +103,7 @@ public class Pipeline {
                 // Create list of colors that are not rivers
                 List<Color> notRiverColors = new ArrayList<Color>();
                 for(int i=0; i<notRiver.length; i++){
-                	notRiverColors.add( notRiver[i] ); // XXX needs testing
+                	notRiverColors.add( notRiver[i] );
                 }
                 ColorPaintover paintOver = new ColorPaintover(quantImg);
                 paintOver.setNewColor( Color.WHITE );
