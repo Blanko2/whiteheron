@@ -63,6 +63,10 @@ public class BlobDetection implements Module {
                     previous.x = x;
                     previous.y = y;
                 }
+                
+                // Adjust previous if we are going to a new column
+                previous.x++;
+                previous.y = height;
             }
             sortImageShapes(imageShapes);
             return imageShapes;
@@ -163,6 +167,10 @@ public class BlobDetection implements Module {
         p.addPoint( start.x, start.y );
         visited[start.y][start.x] = true;
         
+        // If the shape is a single isolated pixel, quit now
+        if (isIsolatedPixel(start, img))
+            return result;
+        
         // Remember which pixel to backtrack to
         Point backtrack = new Point(entry.x, entry.y);
         
@@ -209,51 +217,112 @@ public class BlobDetection implements Module {
         // Determine where start is in relation to center
         Point offset = new Point (current.x - center.x, current.y - center.y);
         
-        // Look for the next clockwise pixel while one is not found
-            // If in same column
-            if (offset.x == 0) {
-                // If one row above
-                if (offset.y == -1)
-                    // We are above center, so move to upper right corner
-                    current.x++;
-                // Else it will be one row below
-                else
-                    // We are below center, so move to lower left corner
-                    current.x--;
-            }
-            // Else, if one column to the left
-            else if (offset.x == -1) {
-                // If one row above
-                if (offset.y == -1)
-                    // We are in upper left corner, so move above center
-                    current.x++;
-                // Else, if in same row
-                else if (offset.y == 0)
-                    // We are to the left of center, so move to upper left corner
-                    current.y--;
-                // Else it will be one row below
-                else
-                    // We are in lower left corner, so move to the left of center
-                    current.y--;
-            }
-            // Else it will be one column to the right
-            else {
-                // If one row above
-                if (offset.y == -1)
-                    // We are in upper right corner, so move to the right of center
-                    current.y++;
-                // Else, if in same row
-                else if (offset.y == 0)
-                    // We are to the right of center, so move to lower right corner
-                    current.y++;
-                // Else it will be one row below
-                else
-                    // We are in lower right corner, so move below center
-                    current.x--;
-            }
+        // If in same column
+        if (offset.x == 0) {
+            // If one row above
+            if (offset.y == -1)
+                // We are above center, so move to upper right corner
+                current.x++;
+            // Else it will be one row below
+            else
+                // We are below center, so move to lower left corner
+                current.x--;
+        }
+        // Else, if one column to the left
+        else if (offset.x == -1) {
+            // If one row above
+            if (offset.y == -1)
+                // We are in upper left corner, so move above center
+                current.x++;
+            // Else, if in same row
+            else if (offset.y == 0)
+                // We are to the left of center, so move to upper left corner
+                current.y--;
+            // Else it will be one row below
+            else
+                // We are in lower left corner, so move to the left of center
+                current.y--;
+        }
+        // Else it will be one column to the right
+        else {
+            // If one row above
+            if (offset.y == -1)
+                // We are in upper right corner, so move to the right of center
+                current.y++;
+            // Else, if in same row
+            else if (offset.y == 0)
+                // We are to the right of center, so move to lower right corner
+                current.y++;
+            // Else it will be one row below
+            else
+                // We are in lower right corner, so move below center
+                current.x--;
+        }
+        return current;
+    }
+    
+    /**
+     * Checks if a pixel in the image is isolated (that is, does
+     * not have any neighbor pixels of the same color).
+     * 
+     * @param p - pixel to be checked
+     * @param img - source image
+     * @return true if isolated, false otherwise
+     */
+    private boolean isIsolatedPixel(Point p, BufferedImage img) {
+        int pixel = img.getRGB( p.x, p.y );
+        int width = img.getWidth();
+        int height = img.getHeight();
+        
+        // Check right
+        if (p.x + 1 < width) {
+            if (pixel == img.getRGB( p.x + 1, p.y ))
+                return false;
+        }
             
-            return current;
-
+        // Check left
+        if (p.x - 1 >= 0) {
+            if (pixel == img.getRGB( p.x - 1, p.y ))
+                return false;
+        }
+        
+        // Check top
+        if (p.y - 1 >= 0) {
+            if (pixel == img.getRGB( p.x, p.y - 1 ))
+                return false;
+        }
+        
+        // Check bottom
+        if (p.y + 1 < height) {
+            if (pixel == img.getRGB( p.x, p.y + 1 ))
+                return false;
+        }
+        
+        // Check top right diagonal
+        if (p.x + 1 < width && p.y - 1 >= 0) {
+            if (pixel == img.getRGB( p.x + 1, p.y - 1 ))
+                return false;
+        }
+        
+        // Check bottom right diagonal
+        if (p.x + 1 < width && p.y + 1 < height) {
+            if (pixel == img.getRGB( p.x + 1, p.y + 1 ))
+                return false;
+        }
+        
+        // Check top left diagonal
+        if (p.x - 1 >= 0 && p.y - 1 >= 0) {
+            if (pixel == img.getRGB( p.x - 1, p.y - 1 ))
+                return false;
+        }
+        
+        // Check bottom left diagonal
+        if (p.x - 1 >= 0 && p.y + 1 < height) {
+            if (pixel == img.getRGB( p.x - 1, p.y + 1 ))
+                return false;
+        }
+        
+        return true;
     }
 
     /**

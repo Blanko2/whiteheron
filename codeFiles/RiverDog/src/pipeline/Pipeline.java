@@ -71,6 +71,8 @@ public class Pipeline {
         // If there are originals, continue
         if (originals != null && originals.size() > 0) {
             
+            System.out.println("Processing images...");
+            
             int index = 0;
             // Go through each original
             for (BufferedImage img : originals) {
@@ -81,6 +83,13 @@ public class Pipeline {
                 // Perform color quantization (creates copy of original)
                 ColorQuantization colorQ = new ColorQuantization(img);
                 BufferedImage quantImg = colorQ.getImage();
+                try {
+                    ImageIO.write( quantImg, "png",
+                            new File(originalNames[index].replaceAll( "\\..+$", "-quantized.png")));
+                }
+                catch ( IOException e1 ) {
+                    e1.printStackTrace();
+                }
                 
                 //==========================================================
                 //                  COLOR PAINT-OVER
@@ -94,6 +103,13 @@ public class Pipeline {
                 paintOver.setNewColor( Color.WHITE );
                 paintOver.setOldColor( notRiverColors );
                 BufferedImage paintedImg = paintOver.getImage();
+                try {
+                    ImageIO.write( paintedImg, "png",
+                            new File(originalNames[index].replaceAll( "\\..+$", "-painted.png")));
+                }
+                catch ( IOException e1 ) {
+                    e1.printStackTrace();
+                }
                 
                 //==========================================================
                 //             REMOVAL OF EDGE MAJORITY COLOR
@@ -105,6 +121,13 @@ public class Pipeline {
                  
                 EdgeMajority majority = new EdgeMajority(paintedImg);
                 paintedImg = majority.getImage();
+                try {
+                    ImageIO.write( paintedImg, "png",
+                            new File(originalNames[index].replaceAll( "\\..+$", "-edgeMajority.png")));
+                }
+                catch ( IOException e1 ) {
+                    e1.printStackTrace();
+                }
                 
                 //==========================================================
                 //				SHAPE FINDER
@@ -125,7 +148,7 @@ public class Pipeline {
                 // Render the image result
                 try {
                     ImageIO.write( renderer.getImage(), "png",
-                            new File(originalNames[index] + "-riverDetected"));
+                            new File(originalNames[index].replaceAll( "\\..+$", "-riverDetected.png")));
                 }
                 catch (IOException e) {
                     System.out.println("Problem saving output image for " +
@@ -134,7 +157,11 @@ public class Pipeline {
                 }
                 index++;
             }
+            System.out.println("Done.");
+            return;
         }
+        
+        System.out.println("Please provide images (none provided).");
     }
 
     /**

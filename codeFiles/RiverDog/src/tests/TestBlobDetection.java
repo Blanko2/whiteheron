@@ -146,4 +146,41 @@ public class TestBlobDetection {
             fail( "Could not load test image." );
         }
     }
+    
+    @Test
+    /**
+     * Test that the detection algorithm
+     * successfully terminates for an isolated
+     * pixel.
+     */
+    public void testFindSinglePixelImage() {
+        try {
+            // Read in test image
+            BufferedImage img = ImageIO.read( new File("src/tests/testImage7.png") );
+            
+            // Run blob detection
+            BlobDetection detection = new BlobDetection(img);
+            List<ImageShape> shapes = detection.findImageShapes();
+
+            // It should find one shape
+            assertEquals(shapes.size(), 1);
+            
+            // The shape should have the following boundary point:
+            Point[] boundaries = { new Point(1, 1) };
+            
+            // Get shape boundaries
+            int[] xpoints = shapes.get( 0 ).getPolygon().xpoints;
+            int[] ypoints = shapes.get( 0 ).getPolygon().ypoints;
+            
+            // Check if they match the expected
+            if (xpoints[0] != boundaries[0].x || ypoints[0] != boundaries[0].y) {
+                fail("Boundaries don't match the expected at point (" + xpoints[0] + ", " + ypoints[0] + ")");
+            }
+            
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            fail( "Could not load test image." );
+        }
+    }
 }
