@@ -83,4 +83,67 @@ public class TestBlobDetection {
             fail( "Could not load test image." );
         }
     }
+    
+    @Test
+    /**
+     * Test that both the red and the green shapes
+     * are detected. The shapes touch each other as well
+     * as the borders of the picture.
+     */
+    public void testFindImageShapesColours() {
+        try {
+            // Read in test image
+            BufferedImage img = ImageIO.read( new File("src/tests/testImage6.png") );
+            
+            // Run blob detection
+            BlobDetection detection = new BlobDetection(img);
+            List<ImageShape> shapes = detection.findImageShapes();
+
+            // It should find one shape
+            assertEquals(shapes.size(), 2);
+            
+            // The red shape (found first) should have the following boundary points:
+            Point[] boundariesRed = {
+                    new Point(0, 3),
+                    new Point(0, 2),
+                    new Point(1, 2),
+                    new Point(1, 3)
+            };
+            
+            // Get red shape boundaries
+            int[] xpointsRed = shapes.get( 0 ).getPolygon().xpoints;
+            int[] ypointsRed = shapes.get( 0 ).getPolygon().ypoints;
+            
+            // Check if they match the expected
+            for (int i = 0; i < boundariesRed.length; i++) {
+                if (xpointsRed[i] != boundariesRed[i].x || ypointsRed[i] != boundariesRed[i].y) {
+                    fail("Red boundaries don't match the expected at point (" + xpointsRed[i] + ", " + ypointsRed[i] + ")");
+                }
+            }
+            
+            // The green shape (found last) should have the following boundary points:
+            Point[] boundariesGreen = {
+                    new Point(0, 1),
+                    new Point(0, 0),
+                    new Point(1, 0),
+                    new Point(1, 1)
+            };
+            
+            // Get green shape boundaries
+            int[] xpointsGreen = shapes.get( 1 ).getPolygon().xpoints;
+            int[] ypointsGreen = shapes.get( 1 ).getPolygon().ypoints;
+            
+            // Check if they match the expected
+            for (int i = 0; i < boundariesGreen.length; i++) {
+                if (xpointsGreen[i] != boundariesGreen[i].x || ypointsGreen[i] != boundariesGreen[i].y) {
+                    fail("Green boundaries don't match the expected at point (" + xpointsGreen[i] + ", " + ypointsGreen[i] + ")");
+                }
+            }
+            
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            fail( "Could not load test image." );
+        }
+    }
 }

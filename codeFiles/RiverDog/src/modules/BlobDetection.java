@@ -50,7 +50,7 @@ public class BlobDetection implements Module {
              * not previously visited pixel is found */
             for (int x = 0; x < width; x++) {
                 for (int y = height - 1; y >= 0; y--) {
-                    if (!visited[y][x] && original.getRGB( x, y ) != white) {
+                    if (!visited[y][x] && isEdge(x, y, original)) {
                         // Add image shape to list
                         current.x = x;
                         current.y = y;
@@ -67,6 +67,32 @@ public class BlobDetection implements Module {
     }
     
     /**
+     * Checks whether a pixel is in an edge of a
+     * group of in a picture.
+     * 
+     * @param x - pixel's x coordinate
+     * @param y - pixel's y coordinate
+     * @param img - source image
+     * @return true if pixel is in edge, false otherwise
+     */
+    private boolean isEdge(int x, int y, BufferedImage img) {
+        int pixel = img.getRGB(x, y);
+        
+        // Pixel is only edge if it is not white
+        if (pixel != white) {
+            // if current 
+            if (y + 1 == img.getHeight())
+                return true;
+            
+            int previous = img.getRGB( x, y + 1 );
+            // If pixel is a different color than the previous, it is an edge
+            if (pixel != previous)
+                return true;
+        }
+        return false;
+    }
+    
+    /**
      * This method uses the Moore neighborhood contour-finding algorithm 
      * to determine the boundaries of a group of pixels. It returns an
      * ImageShape which contains the group's color and boundaries. Note
@@ -80,7 +106,10 @@ public class BlobDetection implements Module {
      * @param img - Image being examined
      * @return an ImageShape containing group color and boundaries
      */
-    public ImageShape mooreNeighborhood(Point start, Point entry, boolean[][] visited, BufferedImage img) {
+    public ImageShape mooreNeighborhood(final Point start, Point entry, boolean[][] visited, BufferedImage img) {
+        int width = img.getWidth();
+        int height = img.getHeight();
+        
         // Pixel color
         int color = img.getRGB( start.x, start.y );
         // Create resulting image shape
@@ -88,35 +117,37 @@ public class BlobDetection implements Module {
         ImageShape result = new ImageShape(p, new Color(color));
         
         // Set the current boundary point to be the starting point
-        Point current = start;
+        Point current = new Point(start.x, start.y);
         
         // Add first pixel to polygon
         p.addPoint( start.x, start.y );
         visited[start.y][start.x] = true;
         
         // Remember which pixel to backtrack to
-        Point backtrack = entry;
+        Point backtrack = new Point(entry.x, entry.y);
         
         // Set clockwise to be the next clockwise pixel (from backtrack, with current as the center)
-        Point clockwise = findNextClockwisePixel(backtrack, current, img);
+        Point clockwise = findNextClockwisePixel(backtrack, current);
         // While c not equal to s do
         while (!start.equals( clockwise )) {
-            // If clockwise pixel is of the right color
-            System.out.println(clockwise.x + ", " + clockwise.y);
-            if (img.getRGB( clockwise.x, clockwise.y ) == color) {
+            // If clockwise pixel is within bounds and is of the right color
+            if (clockwise.x >= 0 && clockwise.x < width && clockwise.y >= 0 && clockwise.y < height &&
+                    img.getRGB( clockwise.x, clockwise.y ) == color) {
                 // Add it to polygon
                 p.addPoint( clockwise.x, clockwise.y );
                 visited[clockwise.y][clockwise.x] = true;
                 // Step to new boundary point
-                current = clockwise;
+                current.x = clockwise.x;
+                current.y = clockwise.y;
                 // Set clockwise to be the next clockwise pixel (from backtrack, with current as the center)
-                clockwise = findNextClockwisePixel(backtrack, current, img);
+                clockwise = findNextClockwisePixel(backtrack, current);
             }
             else {
-                // Not the right color, so move on to the next pixel
-                backtrack = clockwise;
+                // Not in bounds or not the right color, so move on to the next pixel
+                backtrack.x = clockwise.x;
+                backtrack.y = clockwise.y;
                 // Set clockwise to be the next clockwise pixel (from backtrack, with current as the center)
-                clockwise = findNextClockwisePixel(backtrack, current, img);
+                clockwise = findNextClockwisePixel(backtrack, current);
             }
         }       
         return result;
@@ -132,69 +163,57 @@ public class BlobDetection implements Module {
      * @param img - the source image
      * @return the next clockwise point within the boundaries of the image
      */
-    private Point findNextClockwisePixel(Point from, Point center, BufferedImage img) {
-        Point result;
-        int width = img.getWidth();
-        int height = img.getHeight();
-        
-        // Remember initial starting point
-        Point start = from;
+    private Point findNextClockwisePixel(Point from, Point center) {
+        Point current = new Point(from.x, from.y);
         
         // Determine where start is in relation to center
-        Point offset = new Point (start.x - center.x, start.y - center.y);
+        Point offset = new Point (current.x - center.x, current.y - center.y);
         
         // Look for the next clockwise pixel while one is not found
-        while(true) {
             // If in same column
             if (offset.x == 0) {
                 // If one row above
                 if (offset.y == -1)
                     // We are above center, so move to upper right corner
-                    from.x++;
+                    current.x++;
                 // Else it will be one row below
                 else
                     // We are below center, so move to lower left corner
-                    from.x--;
+                    current.x--;
             }
             // Else, if one column to the left
             else if (offset.x == -1) {
                 // If one row above
                 if (offset.y == -1)
                     // We are in upper left corner, so move above center
-                    from.x++;
+                    current.x++;
                 // Else, if in same row
                 else if (offset.y == 0)
                     // We are to the left of center, so move to upper left corner
-                    from.y--;
+                    current.y--;
                 // Else it will be one row below
                 else
                     // We are in lower left corner, so move to the left of center
-                    from.y--;
+                    current.y--;
             }
             // Else it will be one column to the right
             else {
                 // If one row above
                 if (offset.y == -1)
                     // We are in upper right corner, so move to the right of center
-                    from.y++;
+                    current.y++;
                 // Else, if in same row
                 else if (offset.y == 0)
                     // We are to the right of center, so move to lower right corner
-                    from.y++;
+                    current.y++;
                 // Else it will be one row below
                 else
                     // We are in lower right corner, so move below center
-                    from.y--;
+                    current.x--;
             }
             
-            // If we got to the start or the new value is within bounds, we are done
-            if (from.x >= 0 && from.x < width && from.y >= 0 && from.y < height) {
-                result = from;
-                return result;
-            }
-            // Else we haven't found the next pixel yet, so recalculate offset and continue
-            offset = new Point(from.x - center.x, from.y - center.y);
-        }
+            return current;
+
     }
 
     /**
