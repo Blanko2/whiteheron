@@ -11,11 +11,20 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import modules.BlobDetection;
+import modules.BoundaryRenderer;
 import modules.ColorPaintover;
 import modules.ColorQuantization;
 import modules.EdgeMajority;
-import riverObjects.River;
+import riverObjects.ImageShape;
 
+/**
+ * This class implements a pipeline which
+ * process river images, filtering them through
+ * image processing modules and saving the
+ * results to disk. The objective of the pipeline
+ * is to detect river boundaries in images.
+ */
 public class Pipeline {
 	//declaring quantization colors
 	Color quantBlack 	= new Color (0, 0, 0);
@@ -50,43 +59,19 @@ public class Pipeline {
             }
         }
     }
-
-    /**
-     * Runs all original images through the pipeline,
-     * retrieving their river boundaries and drawing
-     * them onto a copy of the originals.
-     */
-    public void renderRiverBoundaries() {
-        // Run pipeline
-        List<River> rivers = startPipeline();
-        
-        // Go through each result
-        for (int i = 0; i < rivers.size(); i++) {
-            
-            // If a river is not null
-            River r = rivers.get( i );
-            if (r != null) {
-                // TODO: Render boundaries on copy of original and save it using original name with suffix
-            }
-        }
-    }
     
     /**
-     * Runs all images through the image processing pipeline filters, returning the
-     * River objects for each image (in the order they were put into the
-     * pipeline). If a river could not be found, the river object will be null
-     * for that image.
-     * 
-     * @return river objects for each image
+     * Runs all images through the image processing pipeline filters, rendering the
+     * image objects for each image (in the order they were put into the
+     * pipeline). If a river could not be found, no boundaries will be drawn
+     * on an image.
      */
-    private List<River> startPipeline() {
-        // Create list to store results
-        List<River> rivers = new ArrayList<River>();
+    public void startPipeline() {
         
         // If there are originals, continue
         if (originals != null && originals.size() > 0) {
-            BufferedImage currImg;
             
+            int index = 0;
             // Go through each original
             for (BufferedImage img : originals) {
                 
@@ -124,25 +109,31 @@ public class Pipeline {
                 //==========================================================
                 //				SHAPE FINDER
                 //==========================================================
+                /* Use the blob finder for finding the largest blob in
+                 * the picture */
                 
-                
-                // TODO: Continue algorithm
-                try {
-					ImageIO.write(paintedImg, "png", new File("painted.png"));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+                BlobDetection blobs = new BlobDetection(paintedImg);
+                List<ImageShape> shapeList = blobs.findLargestShape();
                 
                 //==========================================================
                 //				DRAW BOUNDARIES
                 //==========================================================
                 
+                BoundaryRenderer renderer = new BoundaryRenderer(img);
+                renderer.setOutlineColor( Color.RED );
+                renderer.setImageShapes( shapeList );
+                
+                // Render the image result
+                try {
+                    ImageIO.write( renderer.getImage(), "png", new File(originalNames[index] + "-riverDetected"));
+                }
+                catch (IOException e) {
+                    System.out.println("Problem saving output image for " + originalNames[index]);
+                    e.printStackTrace();
+                }
+                index++;
             }
         }
-        
-        
-        return rivers;
     }
 
     /**

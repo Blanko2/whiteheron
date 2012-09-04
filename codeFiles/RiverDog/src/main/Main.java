@@ -2,6 +2,10 @@ package main;
 
 import pipeline.Pipeline;
 
+/**
+ * This class contains the application's
+ * entry point.
+ */
 public class Main {
 
 	/**
@@ -10,7 +14,7 @@ public class Main {
 	 * @param images -- batch of images to be checked
 	 */
 	public static void main(String[] images) {
-	    new Pipeline(images).renderRiverBoundaries();
+	    new Pipeline(images).startPipeline();
 	}
 
 }

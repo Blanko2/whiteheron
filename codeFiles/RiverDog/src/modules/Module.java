@@ -2,15 +2,17 @@ package modules;
 
 import java.awt.image.BufferedImage;
 
+/**
+ * Interface for modules to be connected
+ * to the pipeline.
+ */
 public interface Module {
-	
-	
-	/*NEEDS: image as input,
-	*Image as output
-	*/
-	
-	
-	public BufferedImage getImage ();
-	
-	
+    
+    /**
+     * Returns the image after filtering
+     * it through the module.
+     * 
+     * @return processed image
+     */
+	public BufferedImage getImage ();	
 }

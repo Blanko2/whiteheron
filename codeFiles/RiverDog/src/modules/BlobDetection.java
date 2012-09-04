@@ -26,10 +26,10 @@ public class BlobDetection implements Module {
     }
     
     /**
-     * Finds and returns a list of all non-white
-     * ImageShapes within the picture.
+     * Finds and returns a sorted list (by edge
+     * size) of all non-white ImageShapes within the picture.
      * 
-     * @return 
+     * @return list of image shapes
      */
     public List<ImageShape> findImageShapes() {
         // If image shapes have already been found, no need to re-detect
@@ -62,8 +62,31 @@ public class BlobDetection implements Module {
                     previous.y = y;
                 }
             }
+            sortImageShapes(imageShapes);
             return imageShapes;
         }
+    }
+    
+    private void sortImageShapes(List<ImageShape> list) {
+        
+    }
+    
+    /**
+     * Returns a list with a single item: the largest
+     * image shape found for the picture.
+     * 
+     * @return list with largest image shape
+     */
+    public List<ImageShape> findLargestShape() {
+        List<ImageShape> result = new ArrayList<ImageShape>();
+        
+        // If image shapes have not been found, detect them first
+        if (imageShapes.isEmpty())
+            findImageShapes();
+        
+        result.add( imageShapes.get( 0 ) );
+        return result;
+        
     }
     
     /**
