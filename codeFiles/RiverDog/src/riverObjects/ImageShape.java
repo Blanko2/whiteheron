@@ -26,4 +26,30 @@ public class ImageShape {
 	public Color getColor() {
 		return color;
 	}
+	
+	/**
+	 * Gets the total perimeter for this
+	 * image shape.
+	 * 
+	 * @return perimeter
+	 */
+	public float getPerimeter() {
+        int[] xpoints = polygon.xpoints;
+        int[] ypoints = polygon.ypoints;
+        float totalLength = 0f;
+        
+        // Go through all the points in the image shape
+        for (int i = 0; i < xpoints.length - 1; i++) {
+            // Add the length between the points
+            totalLength += Math.sqrt( Math.pow( Math.abs(xpoints[i] - xpoints[i + 1]), 2 ) + 
+                    Math.pow( Math.abs(ypoints[i] - ypoints[i + 1]), 2 ) );
+        }
+        
+        // Now add the line between the first and the last points
+        totalLength += Math.sqrt( Math.pow( Math.abs(xpoints[0] - xpoints[xpoints.length - 1]), 2 ) + 
+                Math.pow( Math.abs(ypoints[0] - ypoints[ypoints.length - 1]), 2 ) );
+        
+        // Return perimeter
+        return totalLength;
+	}
 }

@@ -118,17 +118,18 @@ public class Pipeline {
                 //==========================================================
                 //				DRAW BOUNDARIES
                 //==========================================================
-                
                 BoundaryRenderer renderer = new BoundaryRenderer(img);
                 renderer.setOutlineColor( Color.RED );
                 renderer.setImageShapes( shapeList );
                 
                 // Render the image result
                 try {
-                    ImageIO.write( renderer.getImage(), "png", new File(originalNames[index] + "-riverDetected"));
+                    ImageIO.write( renderer.getImage(), "png",
+                            new File(originalNames[index] + "-riverDetected"));
                 }
                 catch (IOException e) {
-                    System.out.println("Problem saving output image for " + originalNames[index]);
+                    System.out.println("Problem saving output image for " +
+                                        originalNames[index]);
                     e.printStackTrace();
                 }
                 index++;

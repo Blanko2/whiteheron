@@ -5,6 +5,8 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import pipeline.Pipeline;
@@ -67,8 +69,23 @@ public class BlobDetection implements Module {
         }
     }
     
+    /**
+     * Sorts the image list in decreasing order,
+     * based on the size of image shape boundaries.
+     * 
+     * @param list - the list of image shapes to be sorted
+     */
     private void sortImageShapes(List<ImageShape> list) {
         
+        // Create comparator for sorting, based on the perimeter of image shapes
+        Comparator<ImageShape> comp = new Comparator<ImageShape>() {
+            public int compare( ImageShape o1, ImageShape o2 ) {
+                return Math.round( o2.getPerimeter() - o1.getPerimeter());
+            }
+        };
+        
+        // Use comparator to sort list
+        Collections.sort( list, comp );
     }
     
     /**
