@@ -197,7 +197,7 @@ public class BlobDetection implements Module {
                 // Set clockwise to be the next clockwise pixel (from backtrack, with current as the center)
                 clockwise = findNextClockwisePixel(backtrack, current);
             }
-        }       
+        }
         return result;
     }
     

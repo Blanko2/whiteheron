@@ -59,14 +59,15 @@ public class BoundaryRenderer implements Module {
 			// Get all the points of polygon (they will be split into an xPoints and a yPoints array)
 			 int[] xPoints = p.xpoints;
 			 int[] yPoints = p.ypoints;
+			 int npoints = p.npoints;
 			// Iterate through the points
-			 for(int i = 0; i<xPoints.length-1; i++){
+			 for(int i = 0; i < npoints-1; i++){
 				// for each point, look at the next one
 				// Draw a line from x1, y1 to x2, y2
 				 g2.drawLine(xPoints[i], yPoints[i], xPoints[i+1], yPoints[i+1]);
 			 }
 			// Once you exit iteration, draw the line between the first and the last points
-			g2.drawLine(xPoints[xPoints.length-1], yPoints[yPoints.length-1], xPoints[0], yPoints[0]); 
+			g2.drawLine(xPoints[npoints-1], yPoints[npoints-1], xPoints[0], yPoints[0]); 
 		}
 		// Dispose of Graphics2D object
 		g2.dispose();
