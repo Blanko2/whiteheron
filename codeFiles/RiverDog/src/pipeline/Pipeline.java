@@ -36,8 +36,8 @@ public class Pipeline {
 	Color quantPurp 	= new Color (128,0,128);
 	Color quantAqua		= new Color (0,128,128);
 	
-	Color[] RiverCols 	= {quantBlack, quantBlue, quantAqua};
-	Color[] notRiver	= {quantRed, quantGreen, quantYello, quantPurp, quantGrey};
+	Color[] RiverCols 	= {quantBlack, quantBlue, quantAqua, quantGrey};
+	Color[] notRiver	= {quantRed, quantGreen, quantYello, quantPurp};
 	
     private String[] originalNames;
     private ArrayList< BufferedImage > originals;
