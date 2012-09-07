@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 
 import modules.BlobDetection;
 import modules.BoundaryRenderer;
+import modules.ColorClassifier;
 import modules.ColorPaintover;
 import modules.ColorQuantization;
 import modules.EdgeMajority;
@@ -76,66 +77,75 @@ public class Pipeline {
             int index = 0;
             // Go through each original
             for (BufferedImage img : originals) {
-                
-                //==========================================================
-                //                  COLOR QUANTIZATION
-                //==========================================================
-                // Perform color quantization (creates copy of original)
-                ColorQuantization colorQ = new ColorQuantization(img);
-                BufferedImage quantImg = colorQ.getImage();
+                ColorClassifier cc = new ColorClassifier(img);
+                BufferedImage classifiedImg = cc.getImage();
                 try {
-                    ImageIO.write( quantImg, "png",
-                            new File(originalNames[index].replaceAll( "\\..+$", "-quantized.png")));
+                	ImageIO.write( classifiedImg, "png",
+                			new File(originalNames[index].replaceAll( "\\..+$", "-classified.png")));
                 }
                 catch ( IOException e1 ) {
-                    e1.printStackTrace();
+                	e1.printStackTrace();
                 }
                 
-                //==========================================================
-                //                  COLOR PAINT-OVER
-                //==========================================================
-                // Create list of colors that are not rivers
-                List<Color> notRiverColors = new ArrayList<Color>();
-                for(int i=0; i<notRiver.length; i++){
-                	notRiverColors.add( notRiver[i] );
-                }
-                ColorPaintover paintOver = new ColorPaintover(quantImg);
-                paintOver.setNewColor( Color.WHITE );
-                paintOver.setOldColor( notRiverColors );
-                BufferedImage paintedImg = paintOver.getImage();
-                try {
-                    ImageIO.write( paintedImg, "png",
-                            new File(originalNames[index].replaceAll( "\\..+$", "-painted.png")));
-                }
-                catch ( IOException e1 ) {
-                    e1.printStackTrace();
-                }
-                
-                //==========================================================
-                //             REMOVAL OF EDGE MAJORITY COLOR
-                //==========================================================
-                /* The most common color around the edge of the picture is
-                 * not likely to be a river, so remove it from the picture,
-                 * replacing it with white (if majority is not white 
-                 * already) */
-                 
-                EdgeMajority majority = new EdgeMajority(paintedImg);
-                paintedImg = majority.getImage();
-                try {
-                    ImageIO.write( paintedImg, "png",
-                            new File(originalNames[index].replaceAll( "\\..+$", "-edgeMajority.png")));
-                }
-                catch ( IOException e1 ) {
-                    e1.printStackTrace();
-                }
-                
+//                //==========================================================
+//                //                  COLOR QUANTIZATION
+//                //==========================================================
+//                // Perform color quantization (creates copy of original)
+//                ColorQuantization colorQ = new ColorQuantization(img);
+//                BufferedImage quantImg = colorQ.getImage();
+//                try {
+//                    ImageIO.write( quantImg, "png",
+//                            new File(originalNames[index].replaceAll( "\\..+$", "-quantized.png")));
+//                }
+//                catch ( IOException e1 ) {
+//                    e1.printStackTrace();
+//                }
+//                
+//                //==========================================================
+//                //                  COLOR PAINT-OVER
+//                //==========================================================
+//                // Create list of colors that are not rivers
+//                List<Color> notRiverColors = new ArrayList<Color>();
+//                for(int i=0; i<notRiver.length; i++){
+//                	notRiverColors.add( notRiver[i] );
+//                }
+//                ColorPaintover paintOver = new ColorPaintover(quantImg);
+//                paintOver.setNewColor( Color.WHITE );
+//                paintOver.setOldColor( notRiverColors );
+//                BufferedImage paintedImg = paintOver.getImage();
+//                try {
+//                    ImageIO.write( paintedImg, "png",
+//                            new File(originalNames[index].replaceAll( "\\..+$", "-painted.png")));
+//                }
+//                catch ( IOException e1 ) {
+//                    e1.printStackTrace();
+//                }
+//                
+//                //==========================================================
+//                //             REMOVAL OF EDGE MAJORITY COLOR
+//                //==========================================================
+//                /* The most common color around the edge of the picture is
+//                 * not likely to be a river, so remove it from the picture,
+//                 * replacing it with white (if majority is not white 
+//                 * already) */
+//                 
+//                EdgeMajority majority = new EdgeMajority(paintedImg);
+//                paintedImg = majority.getImage();
+//                try {
+//                    ImageIO.write( paintedImg, "png",
+//                            new File(originalNames[index].replaceAll( "\\..+$", "-edgeMajority.png")));
+//                }
+//                catch ( IOException e1 ) {
+//                    e1.printStackTrace();
+//                }
+//                
                 //==========================================================
                 //				SHAPE FINDER
                 //==========================================================
                 /* Use the blob finder for finding the largest blob in
                  * the picture */
                 
-                BlobDetection blobs = new BlobDetection(paintedImg);
+                BlobDetection blobs = new BlobDetection(classifiedImg);
                 List<ImageShape> shapeList = blobs.findLargestShape();
                 
                 //==========================================================
