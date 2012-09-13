@@ -146,6 +146,7 @@ public class Pipeline {
                  * the picture */
                 
                 BlobDetection blobs = new BlobDetection(classifiedImg);
+                //List<ImageShape> shapeList = blobs.findLargestRelatedShapes(); TODO: uncomment this for testing segmented river detection
                 List<ImageShape> shapeList = blobs.findLargestShape();
                 
                 //==========================================================

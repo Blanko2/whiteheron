@@ -105,9 +105,79 @@ public class BlobDetection implements Module {
         if (imageShapes.isEmpty())
             findImageShapes();
         
-        result.add( imageShapes.get( 0 ) );
+        if (imageShapes != null && imageShapes.size() >= 1) {
+        	result.add( imageShapes.get( 0 ) );
+        }
         return result;
         
+    }
+    
+    public List<ImageShape> findLargestRelatedShapes(){
+        // If image shapes have not been found, detect them first
+        if (imageShapes.isEmpty())
+            findImageShapes();
+        
+    	// Create result list
+    	ArrayList<ImageShape> result = new ArrayList<ImageShape>();
+    	
+    	if (imageShapes != null && imageShapes.size() >= 1) {
+    		// Average the HSB of the largest polygon
+    		float[] colorBase = averageBoundaryHSB(imageShapes.get(0), original);
+    		// Add first image in the list to results
+    		result.add(imageShapes.get(0));
+	    	// Go through each polygon getting the average of edge HSB
+	    	for (int i = 1; i < imageShapes.size(); i++) {
+	    		ImageShape shape = imageShapes.get(i);
+	    		float[] curColor = averageBoundaryHSB(shape, original);
+	    		// Average must match to a certain threshold, if not rest of polygons are discarded
+	    		if (checkColorSimilarity(colorBase, curColor))
+	    			// If matches, add to list
+	    			result.add(shape);
+	    		else
+	    			break;
+	    	}
+    	}
+    	return result;
+    }
+    
+    private float[] averageBoundaryHSB(ImageShape shape, BufferedImage img) {
+    	float hueTotal = 0f;
+    	float satTotal = 0f;
+    	float briTotal = 0f;
+    	
+    	// Go through all the points in the shape boundaries
+    	int[] xpoints = shape.getPolygon().xpoints;
+    	int[] ypoints = shape.getPolygon().ypoints;
+    	int npoints = shape.getPolygon().npoints;
+    	
+    	for (int i = 0; i < npoints; i++) {    		
+    		// Retrieve color from image and separate R, G, and B components
+    		int[] rgb = ColorClassifier.getRGBComponents(img.getRGB(xpoints[i], ypoints[i]));
+    		// Convert RGB to HSB
+    		float[] hsb = Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], null);
+    		// Add it to running average
+    		hueTotal += hsb[0];
+    		satTotal += hsb[1];
+    		briTotal += hsb[2];
+    	}
+    	// Calculate and return average HSB color
+    	float[] result = new float[3];
+    	result[0] = hueTotal/npoints;
+    	result[1] = satTotal/npoints;
+    	result[2] = briTotal/npoints;
+    	return result;
+    }
+    
+    private boolean checkColorSimilarity(float[] colorBase, float[] otherColor) {
+    	// Threshold: Hue: 10% each side, Saturation: 10% each side, Brightness: 10% each side.
+    	if (Math.abs(colorBase[0] - otherColor[0]) < 0.05)
+    		return false;
+    	else if (Math.abs(colorBase[1] - otherColor[1]) < 0.05)
+    		return false;
+    	else if (Math.abs(colorBase[2] - otherColor[2]) < 0.05)
+    		return false;
+    	
+    	return true;
     }
     
     /**

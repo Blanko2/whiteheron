@@ -13,9 +13,9 @@ import java.awt.image.BufferedImage;
  */
 public class ColorClassifier implements Module {
     // Masks for retrieving RGB values
-    private int redMask = 0x00ff0000;
-    private int greenMask = 0x0000ff00;
-    private int blueMask = 0x000000ff;
+    private static int redMask = 0x00ff0000;
+    private static int greenMask = 0x0000ff00;
+    private static int blueMask = 0x000000ff;
     // Integer representations of black/white
 	private int black = Color.BLACK.getRGB();
 	private int white = Color.WHITE.getRGB();
@@ -98,7 +98,7 @@ public class ColorClassifier implements Module {
 	 * @param color
 	 * @return array of R,G,B
 	 */
-	private int[] getRGBComponents(int color) {
+	public static int[] getRGBComponents(int color) {
 	    int[] result = new int[3];
         /* First use masks to retrieve RGB values,
          * then shift them towards the least
