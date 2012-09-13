@@ -3,7 +3,20 @@ package modules;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
+/**
+ * This module translates each pixel in an image to the
+ * HSB color model, classifying it as a potential river pixel
+ * if it is within the limits of hue, saturation and brightness.
+ * If a pixel is within those limits, it is a potential river
+ * pixel and will be painted black in the resulting image.
+ * Otherwise, it will be painted white.
+ */
 public class ColorClassifier implements Module {
+    // Masks for retrieving RGB values
+    private int redMask = 0x00ff0000;
+    private int greenMask = 0x0000ff00;
+    private int blueMask = 0x000000ff;
+    // Integer representations of black/white
 	private int black = Color.BLACK.getRGB();
 	private int white = Color.WHITE.getRGB();
 	// Upper border hue is 265, so 265/360 is the percentage below
@@ -20,11 +33,14 @@ public class ColorClassifier implements Module {
 	}
 	
 	@Override
+	/**
+	 * Translates the color of each pixel to the HSB
+	 * model, checking if it is a potential river color
+	 * and painting the pixel location with black in
+	 * the resulting image if it is.
+	 */
 	public BufferedImage getImage() {
-		// Masks for retrieving RGB values
-		int redMask = 0x00ff0000;
-		int greenMask = 0x0000ff00;
-		int blueMask = 0x000000ff;
+
 		
 		int width = original.getWidth();
 		int height = original.getHeight();
@@ -34,18 +50,8 @@ public class ColorClassifier implements Module {
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				// Convert RGB value to HSB
-				
-				/* First use masks to retrieve RGB values,
-				 * then shift them towards the least
-				 * significant bit as appropriate */
-				int rgb = original.getRGB(x, y);
-				int red = rgb & redMask;
-				red = red >> 16;
-				int green = rgb & greenMask;
-				green = green >> 8;
-				int blue = rgb & blueMask;
-				
-				float[] hsb = Color.RGBtoHSB(red, green, blue, null);
+				int[] rgb = getRGBComponents(original.getRGB(x, y));
+				float[] hsb = Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], null);
 				
 				// Check that hue, saturation and brightness describe a color that could be a river
 				// If it can be a river, output it as black
@@ -60,6 +66,15 @@ public class ColorClassifier implements Module {
 		return result;
 	}
 	
+	/**
+	 * Helper method which checks whether the HSB
+	 * values of a color are within the set thresholds
+	 * for hue, saturation and brightness.
+	 * 
+	 * @param hsb
+	 * @return true if color within all thresholds,
+	 * false otherwise.
+	 */
 	private boolean checkRiverHSB (float[] hsb) {
 		float huePercent = hsb[0];
 		float satPercent = hsb[1];
@@ -75,37 +90,24 @@ public class ColorClassifier implements Module {
 		return true;
 	}
 	
-//	public static void main(String[] args) {
-		//Test 1 - Masking test
-//		int redMask = 0x00ff0000;
-//		int greenMask = 0x0000ff00;
-//		int blueMask = 0x000000ff;
-//		
-//		BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
-//		Color c = new Color(10, 20, 220);
-//		img.setRGB(0, 0, c.getRGB());
-//		
-//		int rgb = img.getRGB(0, 0);
-//		int red = rgb & redMask;
-//		red = red >> 16;
-//		int green = rgb & greenMask;
-//		green = green >> 8;
-//		int blue = rgb & blueMask;
-//		
-//		if (red != 10)
-//			System.out.println("Red doesn't work. It thinks it should be " + red);
-//		if (green != 20)
-//			System.out.println("Green doesn't work. It thinks it should be " + green);
-//		if (blue != 220)
-//			System.out.println("Blue doesn't work. It thinks it should be " + blue);
-//		
-//		System.out.println("Done");
-		
-		// Test 2 - HSB test
-//		float[] hsb = Color.RGBtoHSB(255, 0, 89, null);
-//		System.out.println("Hue: " + hsb[0]);
-//		System.out.println("Saturation: " + hsb[1]);
-//		System.out.println("Brightness: " + hsb[2]);
-//	}
-
+	/**
+	 * Separates the RGB components of an integer
+	 * representation of a color, returning an
+	 * array with three integers (R, G and B).
+	 * 
+	 * @param color
+	 * @return array of R,G,B
+	 */
+	private int[] getRGBComponents(int color) {
+	    int[] result = new int[3];
+        /* First use masks to retrieve RGB values,
+         * then shift them towards the least
+         * significant bit as appropriate */
+        result[0] = color & redMask;
+        result[0] = result[0] >> 16;
+        result[1]= color & greenMask;
+        result[1] = result[1] >> 8;
+        result[2] = color & blueMask;
+	    return result;
+	}
 }
