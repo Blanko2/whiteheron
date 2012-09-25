@@ -30,7 +30,7 @@ public class TestBlobDetection {
             BufferedImage img = ImageIO.read( new File("src/tests/testImage5.png") );
             
             // Run blob detection
-            BlobDetection detection = new BlobDetection(img);
+            BlobDetection detection = new BlobDetection(img, img);
             List<ImageShape> shapes = detection.findImageShapes();
 
             // It should find one shape
@@ -96,7 +96,7 @@ public class TestBlobDetection {
             BufferedImage img = ImageIO.read( new File("src/tests/testImage6.png") );
             
             // Run blob detection
-            BlobDetection detection = new BlobDetection(img);
+            BlobDetection detection = new BlobDetection(img, img);
             List<ImageShape> shapes = detection.findImageShapes();
 
             // It should find one shape
@@ -159,7 +159,7 @@ public class TestBlobDetection {
             BufferedImage img = ImageIO.read( new File("src/tests/testImage7.png") );
             
             // Run blob detection
-            BlobDetection detection = new BlobDetection(img);
+            BlobDetection detection = new BlobDetection(img, img);
             List<ImageShape> shapes = detection.findImageShapes();
 
             // It should find one shape

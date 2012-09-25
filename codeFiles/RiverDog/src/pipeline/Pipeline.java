@@ -145,9 +145,9 @@ public class Pipeline {
                 /* Use the blob finder for finding the largest blob in
                  * the picture */
                 
-                BlobDetection blobs = new BlobDetection(classifiedImg);
-                //List<ImageShape> shapeList = blobs.findLargestRelatedShapes(); TODO: uncomment this for testing segmented river detection
-                List<ImageShape> shapeList = blobs.findLargestShape();
+                BlobDetection blobs = new BlobDetection(classifiedImg, img);
+                List<ImageShape> shapeList = blobs.findLargestRelatedShapes(); //TODO: uncomment this for testing segmented river detection
+                //List<ImageShape> shapeList = blobs.findLargestShape();
                 
                 //==========================================================
                 //				DRAW BOUNDARIES

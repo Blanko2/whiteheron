@@ -20,11 +20,13 @@ import riverObjects.ImageShape;
  */
 public class BlobDetection implements Module {
     private int white = Color.white.getRGB(); // Int representation of white
+    private BufferedImage classified;
     private BufferedImage original;
     private List<ImageShape> imageShapes = new ArrayList<ImageShape>();
-    
-    public BlobDetection(BufferedImage img) {
-        original = img;
+    public static final float COLOR_SIMILARITY_THRESHOLD = 0.7f;
+    public BlobDetection(BufferedImage classified, BufferedImage original) {
+        this.classified = classified;
+        this.original = original;
     }
     
     /**
@@ -40,8 +42,8 @@ public class BlobDetection implements Module {
         }
         // Else, detect shapes
         else {
-            int width = original.getWidth();
-            int height = original.getHeight();
+            int width = classified.getWidth();
+            int height = classified.getHeight();
 
             // Create a boolean 2D array for storing visited places
             boolean[][] visited = new boolean[height][width];
@@ -52,11 +54,11 @@ public class BlobDetection implements Module {
              * not previously visited pixel is found */
             for (int x = 0; x < width; x++) {
                 for (int y = height - 1; y >= 0; y--) {
-                    if (!visited[y][x] && isEdge(x, y, original)) {
+                    if (!visited[y][x] && isEdge(x, y, classified)) {
                         // Add image shape to list
                         current.x = x;
                         current.y = y;
-                        imageShapes.add(mooreNeighborhood(current, previous, visited, original));
+                        imageShapes.add(mooreNeighborhood(current, previous, visited, classified));
                     }
                     
                     // Remember previously visited point
@@ -122,7 +124,7 @@ public class BlobDetection implements Module {
     	
     	if (imageShapes != null && imageShapes.size() >= 1) {
     		// Average the HSB of the largest polygon
-    		float[] colorBase = averageBoundaryHSB(imageShapes.get(0), original);
+    		float[] colorBase = averageBoundaryHSB(imageShapes.get(0), classified);
     		// Add first image in the list to results
     		result.add(imageShapes.get(0));
 	    	// Go through each polygon getting the average of edge HSB
@@ -170,11 +172,11 @@ public class BlobDetection implements Module {
     
     private boolean checkColorSimilarity(float[] colorBase, float[] otherColor) {
     	// Threshold: Hue: 10% each side, Saturation: 10% each side, Brightness: 10% each side.
-    	if (Math.abs(colorBase[0] - otherColor[0]) < 0.05)
+    	if (Math.abs(colorBase[0] - otherColor[0]) > COLOR_SIMILARITY_THRESHOLD)
     		return false;
-    	else if (Math.abs(colorBase[1] - otherColor[1]) < 0.05)
+    	else if (Math.abs(colorBase[1] - otherColor[1]) > COLOR_SIMILARITY_THRESHOLD)
     		return false;
-    	else if (Math.abs(colorBase[2] - otherColor[2]) < 0.05)
+    	else if (Math.abs(colorBase[2] - otherColor[2]) > COLOR_SIMILARITY_THRESHOLD)
     		return false;
     	
     	return true;
@@ -400,7 +402,7 @@ public class BlobDetection implements Module {
      * provided to the module.
      */
     public BufferedImage getImage() {
-        return Pipeline.deepCopy( original );
+        return Pipeline.deepCopy( classified );
     }
 
 }

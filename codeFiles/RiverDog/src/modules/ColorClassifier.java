@@ -23,9 +23,9 @@ public class ColorClassifier implements Module {
 	public static final float HUE_UPPER_LIMIT = 0.736111f;
 	public static final float HUE_LOWER_LIMIT = 0.444444f;
 	public static final float SATURATION_UPPER_LIMIT = 1f;
-	public static final float SATURATION_LOWER_LIMIT = 0.15f;
-	public static final float BRIGHTNESS_UPPER_LIMIT = 0.9f;
-	public static final float BRIGHTNESS_LOWER_LIMIT = 0.1f;
+	public static final float SATURATION_LOWER_LIMIT = 0f;
+	public static final float BRIGHTNESS_UPPER_LIMIT = 1f;
+	public static final float BRIGHTNESS_LOWER_LIMIT = 0f;
 	private BufferedImage original;
 	
 	public ColorClassifier(BufferedImage img) {
