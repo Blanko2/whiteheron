@@ -56,9 +56,11 @@ public class Pipeline {
             System.out.println("Processing images...");
             
             int index = 0;
+            // Create reference to image outside of loop (for memory efficiency)
+            
+            BufferedImage img = null;
             // Go through each name
             for (String imgName : originalNames) {
-                BufferedImage img = null;
                 try {
                     img = ImageIO.read( new File(imgName) );
                 }
