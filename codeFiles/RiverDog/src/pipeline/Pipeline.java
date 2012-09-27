@@ -6,7 +6,6 @@ import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -14,9 +13,6 @@ import javax.imageio.ImageIO;
 import modules.BlobDetection;
 import modules.BoundaryRenderer;
 import modules.ColorClassifier;
-import modules.ColorPaintover;
-import modules.ColorQuantization;
-import modules.EdgeMajority;
 import riverObjects.ImageShape;
 
 /**
@@ -41,24 +37,9 @@ public class Pipeline {
 	Color[] notRiver	= {quantRed, quantGreen, quantYello, quantPurp};
 	
     private String[] originalNames;
-    private ArrayList< BufferedImage > originals;
 
     public Pipeline( String[] imageNames ) {
         originalNames = imageNames;
-        originals = new ArrayList<BufferedImage>();
-        // Proceed if there are image names
-        if ( imageNames != null && imageNames.length > 0 ) {
-            try {
-                // Read all original images into a list
-                for ( String name : imageNames ) {
-                	originals.add( ImageIO.read( new File( name ) ) );
-                }
-            }
-            catch ( IOException e ) {
-                System.out.println( "Problem reading images from disk." );
-                e.printStackTrace();
-            }
-        }
     }
     
     /**
@@ -70,13 +51,20 @@ public class Pipeline {
     public void startPipeline() {
         
         // If there are originals, continue
-        if (originals != null && originals.size() > 0) {
+        if (originalNames != null && originalNames.length > 0) {
             
             System.out.println("Processing images...");
             
             int index = 0;
-            // Go through each original
-            for (BufferedImage img : originals) {
+            // Go through each name
+            for (String imgName : originalNames) {
+                BufferedImage img = null;
+                try {
+                    img = ImageIO.read( new File(imgName) );
+                }
+                catch ( IOException e2 ) {
+                    System.out.printf("Failed to read image: '%s'\n", imgName);
+                }
                 ColorClassifier cc = new ColorClassifier(img);
                 BufferedImage classifiedImg = cc.getImage();
                 try {
