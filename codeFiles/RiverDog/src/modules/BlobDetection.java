@@ -23,7 +23,7 @@ public class BlobDetection implements Module {
     private BufferedImage classified;
     private BufferedImage original;
     private List<ImageShape> imageShapes = new ArrayList<ImageShape>();
-    public static final float COLOR_SIMILARITY_THRESHOLD = 0.7f;
+    public static final float COLOR_SIMILARITY_THRESHOLD = 0.23f;
     public BlobDetection(BufferedImage classified, BufferedImage original) {
         this.classified = classified;
         this.original = original;
@@ -124,7 +124,7 @@ public class BlobDetection implements Module {
     	
     	if (imageShapes != null && imageShapes.size() >= 1) {
     		// Average the HSB of the largest polygon
-    		float[] colorBase = averageBoundaryHSB(imageShapes.get(0), classified);
+    		float[] colorBase = averageBoundaryHSB(imageShapes.get(0), original);
     		// Add first image in the list to results
     		result.add(imageShapes.get(0));
 	    	// Go through each polygon getting the average of edge HSB
@@ -167,6 +167,7 @@ public class BlobDetection implements Module {
     	result[0] = hueTotal/npoints;
     	result[1] = satTotal/npoints;
     	result[2] = briTotal/npoints;
+    	System.out.printf("Hue avg: %.2f, Sat avg: %.2f, Bright avg: %.2f\n", result[0], result[1], result[2]);
     	return result;
     }
     

@@ -12,6 +12,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import modules.BlobDetection;
+import modules.ColorClassifier;
 
 import org.junit.Test;
 
@@ -178,6 +179,57 @@ public class TestBlobDetection {
             }
             
         }
+        catch (IOException e) {
+            e.printStackTrace();
+            fail( "Could not load test image." );
+        }
+    }
+    
+    @Test
+    /**
+     * Test that the blob detection module is
+     * capable of identifying segmented rivers
+     * with segments of similar colors.
+     */
+    public void testFindLargestRelatedShapes() {
+    	try{
+            // Read in test image
+            BufferedImage original = ImageIO.read( new File("src/tests/testImage8.png") );	
+            
+            // Run color classification
+            ColorClassifier classification = new ColorClassifier(original);
+            BufferedImage classified = classification.getImage();
+            
+            // Run blob detection
+            BlobDetection detection = new BlobDetection(classified, original);
+            List<ImageShape> shapes = detection.findLargestRelatedShapes();
+            
+            // It should find two shapes
+            assertEquals(shapes.size(), 2);
+            
+            // The shapes should have the following boundary points:
+            Point[] boundaries1 = { new Point(6,2), new Point(6,1), new Point(7,1), new Point(8,1), new Point(9,1), new Point(9,2), new Point(8,2), new Point(7,2) };
+            Point[] boundaries2 = { new Point(1,7), new Point(1,6), new Point(2,6), new Point(2,7) };
+            
+         // Get shape boundaries for first shape
+            int[] xpoints = shapes.get( 0 ).getPolygon().xpoints;
+            int[] ypoints = shapes.get( 0 ).getPolygon().ypoints;
+            
+            // Check if they match the expected
+            if (xpoints[0] != boundaries1[0].x || ypoints[0] != boundaries1[0].y) {
+                fail("Boundaries don't match the expected for the first shape at point (" + xpoints[0] + ", " + ypoints[0] + ")");
+            }
+            
+         // Get shape boundaries for second shape
+            xpoints = shapes.get( 1 ).getPolygon().xpoints;
+            ypoints = shapes.get( 1 ).getPolygon().ypoints;
+            
+            // Check if they match the expected
+            if (xpoints[0] != boundaries2[0].x || ypoints[0] != boundaries2[0].y) {
+                fail("Boundaries don't match the expected for the second shape at point (" + xpoints[0] + ", " + ypoints[0] + ")");
+            }
+
+    	}
         catch (IOException e) {
             e.printStackTrace();
             fail( "Could not load test image." );
