@@ -46,6 +46,10 @@ public class ColorClassifier implements Module {
 		int height = original.getHeight();
 		BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		
+		// Keep statistics for printing
+		int totalRiver = 0;
+		int totalNotRiver = 0;
+		
 		// Go through each pixel in the original
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
@@ -55,14 +59,19 @@ public class ColorClassifier implements Module {
 				
 				// Check that hue, saturation and brightness describe a color that could be a river
 				// If it can be a river, output it as black
-				if (checkRiverHSB(hsb))
+				if (checkRiverHSB(hsb)) {
 					result.setRGB(x, y, black);
+					totalRiver++;
+				}
 				// If it cannot be a river, output it as white				
-				else
+				else {
 					result.setRGB(x, y, white);
-					
+					totalNotRiver++;
+				}
 			}
 		}
+		System.out.printf( "\tPotential river pixels: %.2f%%, not river: %.2f%%\n", ((float)totalRiver/(width*height))*100,
+		                                                                         ((float)totalNotRiver/(width*height))*100);
 		return result;
 	}
 	

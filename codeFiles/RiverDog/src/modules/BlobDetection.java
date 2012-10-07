@@ -139,6 +139,9 @@ public class BlobDetection implements Module {
 	    			break;
 	    	}
     	}
+    	int size = result.size();
+    	String suffix = size == 1 ? "" : "s";
+    	System.out.printf( "\t%d river segment%s found\n", size, suffix );
     	return result;
     }
     
@@ -167,7 +170,7 @@ public class BlobDetection implements Module {
     	result[0] = hueTotal/npoints;
     	result[1] = satTotal/npoints;
     	result[2] = briTotal/npoints;
-    	System.out.printf("Hue avg: %.2f, Sat avg: %.2f, Bright avg: %.2f\n", result[0], result[1], result[2]);
+    	//System.out.printf("Hue avg: %.2f, Sat avg: %.2f, Bright avg: %.2f\n", result[0], result[1], result[2]);
     	return result;
     }
     

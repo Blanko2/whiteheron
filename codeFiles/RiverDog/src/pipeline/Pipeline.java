@@ -53,21 +53,32 @@ public class Pipeline {
         // If there are originals, continue
         if (originalNames != null && originalNames.length > 0) {
             
-            System.out.println("Processing images...");
+            System.out.println("Processing images...\n");
             
             int index = 0;
-            // Create reference to image outside of loop (for memory efficiency)
             
+            // Create reference to image outside of loop (for memory efficiency)
             BufferedImage img = null;
+            
             // Go through each name
             for (String imgName : originalNames) {
                 try {
+                    // Load image
                     img = ImageIO.read( new File(imgName) );
+                    System.out.printf("Loaded image '%s'\n", imgName);
                 }
                 catch ( IOException e2 ) {
                     System.out.printf("Failed to read image: '%s'\n", imgName);
                 }
+                
+                //==========================================================
+                //              COLOR CLASSIFIER
+                //==========================================================
+                /* Use the color classifier to determine which pixels are
+                 * likely to be part of a river */
+                
                 ColorClassifier cc = new ColorClassifier(img);
+                System.out.println("\tRun color classifier");
                 BufferedImage classifiedImg = cc.getImage();
                 try {
                 	ImageIO.write( classifiedImg, "png",
@@ -77,58 +88,7 @@ public class Pipeline {
                 	e1.printStackTrace();
                 }
                 
-//                //==========================================================
-//                //                  COLOR QUANTIZATION
-//                //==========================================================
-//                // Perform color quantization (creates copy of original)
-//                ColorQuantization colorQ = new ColorQuantization(img);
-//                BufferedImage quantImg = colorQ.getImage();
-//                try {
-//                    ImageIO.write( quantImg, "png",
-//                            new File(originalNames[index].replaceAll( "\\..+$", "-quantized.png")));
-//                }
-//                catch ( IOException e1 ) {
-//                    e1.printStackTrace();
-//                }
-//                
-//                //==========================================================
-//                //                  COLOR PAINT-OVER
-//                //==========================================================
-//                // Create list of colors that are not rivers
-//                List<Color> notRiverColors = new ArrayList<Color>();
-//                for(int i=0; i<notRiver.length; i++){
-//                	notRiverColors.add( notRiver[i] );
-//                }
-//                ColorPaintover paintOver = new ColorPaintover(quantImg);
-//                paintOver.setNewColor( Color.WHITE );
-//                paintOver.setOldColor( notRiverColors );
-//                BufferedImage paintedImg = paintOver.getImage();
-//                try {
-//                    ImageIO.write( paintedImg, "png",
-//                            new File(originalNames[index].replaceAll( "\\..+$", "-painted.png")));
-//                }
-//                catch ( IOException e1 ) {
-//                    e1.printStackTrace();
-//                }
-//                
-//                //==========================================================
-//                //             REMOVAL OF EDGE MAJORITY COLOR
-//                //==========================================================
-//                /* The most common color around the edge of the picture is
-//                 * not likely to be a river, so remove it from the picture,
-//                 * replacing it with white (if majority is not white 
-//                 * already) */
-//                 
-//                EdgeMajority majority = new EdgeMajority(paintedImg);
-//                paintedImg = majority.getImage();
-//                try {
-//                    ImageIO.write( paintedImg, "png",
-//                            new File(originalNames[index].replaceAll( "\\..+$", "-edgeMajority.png")));
-//                }
-//                catch ( IOException e1 ) {
-//                    e1.printStackTrace();
-//                }
-//                
+
                 //==========================================================
                 //				SHAPE FINDER
                 //==========================================================
@@ -136,8 +96,8 @@ public class Pipeline {
                  * the picture */
                 
                 BlobDetection blobs = new BlobDetection(classifiedImg, img);
-                List<ImageShape> shapeList = blobs.findLargestRelatedShapes(); //TODO: uncomment this for testing segmented river detection
-                //List<ImageShape> shapeList = blobs.findLargestShape();
+                System.out.println("\tRun blob detection");
+                List<ImageShape> shapeList = blobs.findLargestRelatedShapes();
                 
                 //==========================================================
                 //				DRAW BOUNDARIES
@@ -148,8 +108,10 @@ public class Pipeline {
                 
                 // Render the image result
                 try {
+                    String saveName = originalNames[index].replaceAll( "\\..+$", "-riverDetected.png");
+                    System.out.printf("\tRender boundaries and save result as '%s'\n\n", saveName);
                     ImageIO.write( renderer.getImage(), "png",
-                            new File(originalNames[index].replaceAll( "\\..+$", "-riverDetected.png")));
+                            new File(saveName));
                 }
                 catch (IOException e) {
                     System.out.println("Problem saving output image for " +
@@ -158,7 +120,9 @@ public class Pipeline {
                 }
                 index++;
             }
-            System.out.println("Done.");
+            int size = originalNames.length;
+            String suffix = size == 1 ? "" : "s";
+            System.out.printf("Done. %d image%s processed.\n", size, suffix);
             return;
         }
         
