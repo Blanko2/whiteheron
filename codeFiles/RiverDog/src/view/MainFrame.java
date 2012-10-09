@@ -4,8 +4,9 @@
  */
 package view;
 
-import java.awt.FlowLayout;
+import java.awt.BorderLayout;
 import java.awt.Frame;
+import java.io.File;
 import javax.swing.JFrame;
 
 /**
@@ -14,19 +15,34 @@ import javax.swing.JFrame;
  */
 public class MainFrame extends Frame {
     
-    LeftPanel leftPanel;
+    String[] locations;
     
-    public MainFrame(){
+    LeftPanel leftPanel;
+    RightPanel rightPanel;
+    
+    public MainFrame(String[] locations){
+        this.locations = locations;
+        
+        File dir = new File(locations[0]);
+        File[] fileList = dir.listFiles();
+        
+        
+        
         JFrame mainFrame = new JFrame("River Detection");
         
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainFrame.setLayout(new FlowLayout());
+        mainFrame.setLayout(new BorderLayout());
         
-        leftPanel = new LeftPanel();
+        leftPanel = new LeftPanel(fileList);
+       // rightPanel = new RightPanel();
         // TODO add in Right Panel
         // add in image viewer and JXList with
         // processed images
-        mainFrame.add(leftPanel);
+        mainFrame.add("West", leftPanel);
+        
+        
+        mainFrame.setVisible(true);
+        mainFrame.pack();
     }
     
 }
