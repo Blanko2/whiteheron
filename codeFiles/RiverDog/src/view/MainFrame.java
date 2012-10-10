@@ -38,7 +38,7 @@ public class MainFrame extends Frame {
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setLayout(new BorderLayout());
         
-        leftPanel = new LeftPanel(fileList, this);
+        leftPanel = new LeftPanel(fileList);
        // rightPanel = new RightPanel();
         // TODO add in Right Panel
         // add in image viewer and JXList with
@@ -47,7 +47,7 @@ public class MainFrame extends Frame {
         
         
         //leftPanel.setPreferredSize(new Dimension(this.getWidth(), this.getHeight()));
-        this.setPreferredSize(new Dimension(800,600));
+        this.setMinimumSize(new Dimension(800,600));
         mainFrame.setVisible(true);
         mainFrame.pack();
     }

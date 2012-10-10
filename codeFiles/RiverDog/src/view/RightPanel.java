@@ -4,16 +4,119 @@
  */
 package view;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import javax.imageio.ImageIO;
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
+import org.jdesktop.swingx.JXList;
 import org.jdesktop.swingx.JXPanel;
+import org.jdesktop.swingx.painter.ImagePainter;
 
 /**
  *
  * @author rodrigo
  */
 public class RightPanel extends JXPanel{
+    ArrayList<String> files;
+    File[] resultList;
     
+    JXPanel imageContainer;
+    
+    int prefWidth = 400;
+    int prefHeight = 800;
+    
+    /**
+     * 
+     * @param results 
+     */
     public RightPanel(File[] results){
+        this.resultList = results;
+        files = new ArrayList<String>();
         
+        for(File file : resultList){
+            files.add(file.getName());
+        }
+        
+        this.setMinimumSize(new Dimension(prefWidth, prefHeight));
+        this.setLayout(new BorderLayout());
+        addComponents();
+    }
+    
+    /**
+     * 
+     */
+    private void addComponents(){
+        JXPanel containerPane = new JXPanel();
+        //JXPanel bottomPane = new JXPanel();
+        
+        addTopComponents(containerPane);
+        //addBotComponents(bottomPane);
+    }
+    
+    /**
+     * 
+     * @param ContainerPane 
+     */
+    private void addTopComponents(JComponent ContainerPane){
+        JXList resultLister = new JXList(files.toArray());
+        JScrollPane scroll = new JScrollPane(resultLister);
+        
+        int listHeight = prefHeight/3;
+        scroll.setMinimumSize(new Dimension(prefWidth, listHeight));
+        resultLister.addMouseListener(addMouseListener());
+        
+        ContainerPane.add(scroll);
+        ContainerPane.add(imageContainer);
+    }
+    
+    
+    
+    
+    /**
+     * need to later add a check if file is an image or not!
+     * just put that somewhere
+     * 
+     * @param index 
+     */
+    private void updateImage(int index){
+        String imageName = files.get(index);
+        BufferedImage image = null;
+        for (File file : resultList){
+            if(imageName.equals(file.getName())){
+                try{
+                image = ImageIO.read(file);
+                break;
+                }catch(IOException e){System.out.println("images broke");}
+            }
+        }
+        
+        if(image != null){
+            imageContainer.setBackgroundPainter(new ImagePainter(image));
+        }
+        
+    }
+    
+  /**
+     * 
+     * @return 
+     */
+    private MouseAdapter addMouseListener(){
+        return new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e){
+                JXList list = (JXList) e.getSource();
+                if(e.getClickCount() == 2){
+                    int index = list.locationToIndex(e.getPoint());
+                    updateImage(index);
+                }
+            }
+        };
     }
 }

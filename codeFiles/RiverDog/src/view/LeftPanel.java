@@ -7,6 +7,7 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
+import javax.swing.JScrollPane;
 import org.jdesktop.swingx.JXButton;
 import org.jdesktop.swingx.JXList;
 import org.jdesktop.swingx.JXPanel;
@@ -28,29 +30,27 @@ public class LeftPanel extends JXPanel{
     ArrayList<String> files;
     File[] fileList;
     
-    Frame parent;
     JXPanel imageContainer;
     
     int prefWidth = 400;
-    int prefHeight = 600;
+    int prefHeight = 700;
     
     /**
      * Constructs the Left Panel of the GUI
      */
-    public LeftPanel(File[] fileList, Frame parent){
+    public LeftPanel(File[] fileList){
         //TODO add in the JXList and selection 
         // add in a button to run the program
         //initializes an arraylist of strings and then puts
         //files into it so that it can list the files and
         //still grab the canonical location
-        this.parent = parent;
         this.fileList = fileList;
         files = new ArrayList<String>();
         
         for(File file : fileList){
             files.add(file.getName());
         }
-        this.setPreferredSize(new Dimension(prefWidth, prefHeight));       
+        this.setMinimumSize(new Dimension(prefWidth, prefHeight));       
         this.setLayout(new BorderLayout());
         addComponents();       
     }   
@@ -62,8 +62,11 @@ public class LeftPanel extends JXPanel{
         JXPanel topPane = new JXPanel();
         JXPanel bottomPane = new JXPanel();
         
+        bottomPane.setLayout(new GridLayout());
+        
         addTopComponents(topPane);
         addBotComponents(bottomPane);
+              
         
         this.add("North", topPane);
         this.add("South", bottomPane);
@@ -76,12 +79,19 @@ public class LeftPanel extends JXPanel{
      * @param topPane 
      */
     private void addTopComponents(JComponent topPane){
+        
         JXList imageList = new JXList(files.toArray());
-        int listHeight = 2*(prefHeight/3);
-        imageList.setPreferredSize(new Dimension(prefWidth, listHeight));
+        JScrollPane scroll = new JScrollPane(imageList);
+        
+        int listHeight = prefHeight/3;
+        scroll.setPreferredSize(new Dimension(prefWidth, listHeight));
         imageList.addMouseListener(addMouseListener());
+        
         imageContainer = new JXPanel();
-        topPane.add(imageList);
+        imageContainer.setMinimumSize(new Dimension(prefWidth, prefHeight-listHeight-10));
+       
+        topPane.add(scroll);
+        topPane.add(imageContainer);
     }
     
     /**
