@@ -5,6 +5,7 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.io.File;
 import javax.swing.JFrame;
@@ -20,6 +21,10 @@ public class MainFrame extends Frame {
     LeftPanel leftPanel;
     RightPanel rightPanel;
     
+    /**
+     * 
+     * @param locations 
+     */
     public MainFrame(String[] locations){
         this.locations = locations;
         
@@ -33,7 +38,7 @@ public class MainFrame extends Frame {
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setLayout(new BorderLayout());
         
-        leftPanel = new LeftPanel(fileList);
+        leftPanel = new LeftPanel(fileList, this);
        // rightPanel = new RightPanel();
         // TODO add in Right Panel
         // add in image viewer and JXList with
@@ -41,6 +46,8 @@ public class MainFrame extends Frame {
         mainFrame.add("West", leftPanel);
         
         
+        //leftPanel.setPreferredSize(new Dimension(this.getWidth(), this.getHeight()));
+        this.setPreferredSize(new Dimension(800,600));
         mainFrame.setVisible(true);
         mainFrame.pack();
     }

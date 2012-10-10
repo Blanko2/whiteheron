@@ -5,6 +5,8 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -26,28 +28,36 @@ public class LeftPanel extends JXPanel{
     ArrayList<String> files;
     File[] fileList;
     
+    Frame parent;
     JXPanel imageContainer;
+    
+    int prefWidth = 400;
+    int prefHeight = 600;
+    
     /**
      * Constructs the Left Panel of the GUI
      */
-    public LeftPanel(File[] fileList){
+    public LeftPanel(File[] fileList, Frame parent){
         //TODO add in the JXList and selection 
         // add in a button to run the program
         //initializes an arraylist of strings and then puts
         //files into it so that it can list the files and
         //still grab the canonical location
+        this.parent = parent;
         this.fileList = fileList;
         files = new ArrayList<String>();
         
         for(File file : fileList){
             files.add(file.getName());
         }
-               
+        this.setPreferredSize(new Dimension(prefWidth, prefHeight));       
         this.setLayout(new BorderLayout());
-        addComponents();
-        
+        addComponents();       
     }   
-        
+     
+    /**
+     * 
+     */
     private void addComponents(){
         JXPanel topPane = new JXPanel();
         JXPanel bottomPane = new JXPanel();
@@ -57,21 +67,38 @@ public class LeftPanel extends JXPanel{
         
         this.add("North", topPane);
         this.add("South", bottomPane);
+        
+        
     }
     
+    /**
+     * 
+     * @param topPane 
+     */
     private void addTopComponents(JComponent topPane){
         JXList imageList = new JXList(files.toArray());
+        int listHeight = 2*(prefHeight/3);
+        imageList.setPreferredSize(new Dimension(prefWidth, listHeight));
         imageList.addMouseListener(addMouseListener());
         imageContainer = new JXPanel();
         topPane.add(imageList);
     }
     
+    /**
+     * 
+     * @param botPane 
+     */
     private void addBotComponents(JComponent botPane){
         JXButton run = new JXButton("Run");
         botPane.add(run);
     }
     
-    
+    /**
+     * need to later add a check if file is an image or not!
+     * just put that somewhere
+     * 
+     * @param index 
+     */
     private void updateImage(int index){
         String imageName = files.get(index);
         BufferedImage image = null;
@@ -91,7 +118,10 @@ public class LeftPanel extends JXPanel{
     }
     
     
-    
+    /**
+     * 
+     * @return 
+     */
     private MouseAdapter addMouseListener(){
         return new MouseAdapter(){
             @Override

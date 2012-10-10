@@ -20,7 +20,7 @@ public class Main {
             if(directories.length == 0){
                 MainFrame mainframe = new MainFrame(def);
             }
-            else{
+            else{//TODO Add a check for folder permissions
                 MainFrame mainframe = new MainFrame(directories);
             }
             

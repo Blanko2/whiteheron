@@ -4,6 +4,7 @@
  */
 package view;
 
+import java.io.File;
 import org.jdesktop.swingx.JXPanel;
 
 /**
