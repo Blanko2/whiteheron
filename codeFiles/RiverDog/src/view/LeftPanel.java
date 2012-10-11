@@ -62,6 +62,7 @@ public class LeftPanel extends JXPanel{
         JXPanel topPane = new JXPanel();
         JXPanel bottomPane = new JXPanel();
         
+        topPane.setLayout(new GridLayout(0,1));
         bottomPane.setLayout(new GridLayout());
         
         addTopComponents(topPane);
@@ -89,7 +90,7 @@ public class LeftPanel extends JXPanel{
         
         imageContainer = new JXPanel();
         imageContainer.setMinimumSize(new Dimension(prefWidth, prefHeight-listHeight-10));
-       
+
         topPane.add(scroll);
         topPane.add(imageContainer);
     }
@@ -122,7 +123,9 @@ public class LeftPanel extends JXPanel{
         }
         
         if(image != null){
-            imageContainer.setBackgroundPainter(new ImagePainter(image));
+            ImagePainter paint = new ImagePainter(image);
+            paint.setScaleToFit(true);
+            imageContainer.setBackgroundPainter(paint);
         }
         
     }

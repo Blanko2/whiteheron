@@ -6,6 +6,7 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -24,20 +25,25 @@ import org.jdesktop.swingx.painter.ImagePainter;
  * @author rodrigo
  */
 public class RightPanel extends JXPanel{
+    File results;
     ArrayList<String> files;
     File[] resultList;
     
+    JXList resultLister;    
     JXPanel imageContainer;
     
-    int prefWidth = 400;
+    int prefWidth = 500;
     int prefHeight = 800;
     
     /**
      * 
      * @param results 
      */
-    public RightPanel(File[] results){
-        this.resultList = results;
+    public RightPanel(File results){
+        this.results = results;
+        
+        
+        this.resultList = results.listFiles();
         files = new ArrayList<String>();
         
         for(File file : resultList){
@@ -49,15 +55,24 @@ public class RightPanel extends JXPanel{
         addComponents();
     }
     
+    public void updateResults(){
+        resultList = results.listFiles();
+        resultLister.setListData(resultList);
+        resultLister.updateUI();
+    }
+    
     /**
      * 
      */
     private void addComponents(){
         JXPanel containerPane = new JXPanel();
+        containerPane.setMinimumSize(new Dimension(prefWidth,prefHeight));
+        containerPane.setLayout(new GridLayout(0,1));
         //JXPanel bottomPane = new JXPanel();
         
         addTopComponents(containerPane);
         //addBotComponents(bottomPane);
+        this.add(containerPane);
     }
     
     /**
@@ -65,12 +80,15 @@ public class RightPanel extends JXPanel{
      * @param ContainerPane 
      */
     private void addTopComponents(JComponent ContainerPane){
-        JXList resultLister = new JXList(files.toArray());
+        resultLister = new JXList(files.toArray());
         JScrollPane scroll = new JScrollPane(resultLister);
         
         int listHeight = prefHeight/3;
         scroll.setMinimumSize(new Dimension(prefWidth, listHeight));
         resultLister.addMouseListener(addMouseListener());
+        
+        imageContainer = new JXPanel();
+        imageContainer.setMinimumSize(new Dimension(prefWidth, prefHeight/2));
         
         ContainerPane.add(scroll);
         ContainerPane.add(imageContainer);
@@ -98,7 +116,9 @@ public class RightPanel extends JXPanel{
         }
         
         if(image != null){
-            imageContainer.setBackgroundPainter(new ImagePainter(image));
+            ImagePainter paint = new ImagePainter(image);
+            paint.setScaleToFit(true);
+            imageContainer.setBackgroundPainter(paint);
         }
         
     }
