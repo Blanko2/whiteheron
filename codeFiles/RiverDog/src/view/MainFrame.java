@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.JFrame;
 import org.jdesktop.swingx.JXButton;
+import pipeline.Pipeline;
 
 /**
  *
@@ -19,7 +20,11 @@ import org.jdesktop.swingx.JXButton;
  */
 public class MainFrame extends Frame {
     
+    Pipeline pipe;
+    
     String[] locations;
+    String origin;
+    String result;
     
     LeftPanel leftPanel;
     RightPanel rightPanel;
@@ -30,6 +35,8 @@ public class MainFrame extends Frame {
      */
     public MainFrame(String[] locations){
         this.locations = locations;
+        this.origin = locations[0];
+        this.result = locations[1];
         
         File dir = new File(locations[0]);
         File res = new File(locations[1]);
@@ -42,12 +49,9 @@ public class MainFrame extends Frame {
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setLayout(new BorderLayout());
         
-        leftPanel = new LeftPanel(fileList);
+        leftPanel = new LeftPanel(fileList, this);
         rightPanel = new RightPanel(res);
-       // rightPanel = new RightPanel();
-        // TODO add in Right Panel
-        // add in image viewer and JXList with
-        // processed images
+       
         mainFrame.add("West", leftPanel);
         
         mainFrame.add("Center", rightPanel);
@@ -60,16 +64,50 @@ public class MainFrame extends Frame {
             }
             
         });
-       // mainFrame.add(update);
-        
-        
-        //leftPanel.setPreferredSize(new Dimension(this.getWidth(), this.getHeight()));
+        mainFrame.add("East",update);
         this.setMinimumSize(new Dimension(800,600));
         mainFrame.setVisible(true);
         mainFrame.pack();
     }
     
-    private void updatePane(RightPanel pane){
+    /**
+     * 
+     * @return 
+     */
+    public Pipeline getPipeline(){
+        return pipe;
+    }
+    
+    /**
+     * 
+     * @param pipe 
+     */
+    public void setPipeline(Pipeline pipe){
+        this.pipe = pipe;
+    }
+    
+    
+    /**
+     * 
+     * @return 
+     */
+    public String getOrigin(){
+        return origin;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public String getResults(){
+        return result;
+    }
+    
+    /**
+     * 
+     * @param pane 
+     */
+    public void updatePane(RightPanel pane){
         pane.updateResults();
     }
     

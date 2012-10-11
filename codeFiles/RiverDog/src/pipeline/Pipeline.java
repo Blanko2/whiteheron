@@ -40,8 +40,58 @@ public class Pipeline {
 
     public Pipeline( String[] imageNames ) {
         originalNames = imageNames;
+    }  
+    
+   
+    public Pipeline(){
+        
     }
     
+    public BufferedImage startPipeline(File image){
+        BufferedImage img = null;
+        try{
+            img = ImageIO.read(image);
+        }catch(IOException e){System.out.printf("Failed to read image: '%s'\n", 
+                image.getName());}
+        
+        //==========================================================
+        //              COLOR CLASSIFIER
+        //==========================================================
+        /* Use the color classifier to determine which pixels are
+         * likely to be part of a river */
+
+        ColorClassifier cc = new ColorClassifier(img);
+        System.out.println("\tRun color classifier");
+        BufferedImage classifiedImg = cc.getImage();
+        try {
+                ImageIO.write( classifiedImg, "png",
+                                new File(image.getCanonicalPath().replaceAll( "\\..+$", "-classified.png")));
+        }
+        catch ( IOException e1 ) {
+                e1.printStackTrace();
+        }
+
+
+        //==========================================================
+        //				SHAPE FINDER
+        //==========================================================
+        /* Use the blob finder for finding the largest blob in
+         * the picture */
+
+        BlobDetection blobs = new BlobDetection(classifiedImg, img);
+        System.out.println("\tRun blob detection");
+        List<ImageShape> shapeList = blobs.findLargestRelatedShapes();
+
+        //==========================================================
+        //				DRAW BOUNDARIES
+        //==========================================================
+        BoundaryRenderer renderer = new BoundaryRenderer(img);
+        renderer.setOutlineColor( Color.RED );
+        renderer.setImageShapes( shapeList );
+
+        return deepCopy(renderer.getImage());
+        
+    }
     /**
      * Runs all images through the image processing pipeline filters, rendering the
      * image objects for each image (in the order they were put into the

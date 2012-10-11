@@ -6,8 +6,9 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -21,29 +22,33 @@ import org.jdesktop.swingx.JXButton;
 import org.jdesktop.swingx.JXList;
 import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.painter.ImagePainter;
+import pipeline.Pipeline;
 
 /**
  *
  * @author rodrigo
  */
 public class LeftPanel extends JXPanel{
+    MainFrame parent;
+    
     ArrayList<String> files;
     File[] fileList;
     
     JXPanel imageContainer;
     
-    int prefWidth = 400;
+    int prefWidth = 340;
     int prefHeight = 700;
     
     /**
      * Constructs the Left Panel of the GUI
      */
-    public LeftPanel(File[] fileList){
+    public LeftPanel(File[] fileList, MainFrame parent){
         //TODO add in the JXList and selection 
         // add in a button to run the program
         //initializes an arraylist of strings and then puts
         //files into it so that it can list the files and
         //still grab the canonical location
+        this.parent = parent;
         this.fileList = fileList;
         files = new ArrayList<String>();
         
@@ -101,7 +106,35 @@ public class LeftPanel extends JXPanel{
      */
     private void addBotComponents(JComponent botPane){
         JXButton run = new JXButton("Run");
+        
+        run.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                runProgram();
+            }
+            
+        });
+        
         botPane.add(run);
+    }
+    
+    /**
+     * 
+     */
+    private void runProgram(){
+        /*
+         * run pipeline - then update the right panel.
+         * pipeline needs to be run with the file list 
+         * needs to run through all images/files in the list
+         * update can just be called however
+         */
+        
+        
+        Pipeline pipe = new Pipeline();
+        for(File file: fileList){
+            BufferedImage image = pipe.startPipeline(file);
+            saveImage(image, parent.getResults(), file.getName());
+        }
     }
     
     /**
@@ -127,9 +160,17 @@ public class LeftPanel extends JXPanel{
             paint.setScaleToFit(true);
             imageContainer.setBackgroundPainter(paint);
         }
-        
     }
     
+    /**
+     *  needs to write image to file in specified location
+     * @param img 
+     */
+    private void saveImage(BufferedImage img, String result, String fname){
+        try{
+            ImageIO.write(img, "png", new File(result+"/"+fname));
+        }catch(IOException i){}
+    }
     
     /**
      * 

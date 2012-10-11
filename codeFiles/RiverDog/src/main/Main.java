@@ -9,6 +9,7 @@ import view.MainFrame;
  */
 public class Main {
     
+    //private final static String sep = System.getProperty("file.separator");
     private final static String[] def = {"./images", "./results"};
     
 	/**

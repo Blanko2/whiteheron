@@ -44,22 +44,13 @@ public class RightPanel extends JXPanel{
         
         
         this.resultList = results.listFiles();
-        files = new ArrayList<String>();
-        
-        for(File file : resultList){
-            files.add(file.getName());
-        }
+        fileUpdate();
         
         this.setMinimumSize(new Dimension(prefWidth, prefHeight));
         this.setLayout(new BorderLayout());
         addComponents();
     }
-    
-    public void updateResults(){
-        resultList = results.listFiles();
-        resultLister.setListData(resultList);
-        resultLister.updateUI();
-    }
+ 
     
     /**
      * 
@@ -94,8 +85,21 @@ public class RightPanel extends JXPanel{
         ContainerPane.add(imageContainer);
     }
     
+       
+    public void updateResults(){
+        resultList = results.listFiles();
+        resultLister.setListData(resultList);
+        fileUpdate();
+        resultLister.updateUI();
+    }
     
-    
+    private void fileUpdate(){
+        files = new ArrayList<String>();
+
+            for(File file : resultList){
+                files.add(file.getName());
+            }
+    }
     
     /**
      * need to later add a check if file is an image or not!
