@@ -63,13 +63,13 @@ public class Pipeline {
         ColorClassifier cc = new ColorClassifier(img);
         System.out.println("\tRun color classifier");
         BufferedImage classifiedImg = cc.getImage();
-        try {
-                ImageIO.write( classifiedImg, "png",
-                                new File(image.getCanonicalPath().replaceAll( "\\..+$", "-classified.png")));
-        }
-        catch ( IOException e1 ) {
-                e1.printStackTrace();
-        }
+//        try {
+//                ImageIO.write( classifiedImg, "png",
+//                                new File(image.getCanonicalPath().replaceAll( "\\..+$", "-classified.png")));
+//        }
+//        catch ( IOException e1 ) {
+//                e1.printStackTrace();
+//        }
 
 
         //==========================================================

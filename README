@@ -1,26 +1,13 @@
-To get this repository: 
-	git clone /vol/projects/engr302_2012T2/e302t9/white-heron.git
-should give you an output that doesnt mention an empty repository, should
-add a file to the repo called README (which is this file).
+This project is a boundary detection system created for WaiNZ by team White Heron as part of a requirement for Engineering 302 @ Victoria University. 
 
-check youre on the right branch:
-	git branch
-Output should be *master
+The project works with a pipeline that passes the image through several filters which then detect the outline of a given river. 
+At the moment the system works quite well, but there are additions to be made:
 
-To commit and push a file:
-	git add . //adds all files in the dir to git's tracker
-	git commit -m 'my commit message'
-That will have committed your files, but you still need to push!
-	git push
-that should be all.
+Extending the system to join segmented portions of rivers together.
+Further testing on different colored rivers - the program is not well tested on muddy, or oddly colored rivers.
+GUI needs further refining 
 
-recap:
-	git clone <repo location>
-	<add files, whatever>
-	git add .
-	git commit -m 'message'
-	git push
+Another extension is to add in a module to detect cows into the program, which was the initial requirement, but we deemed it beyond our
+expertise in the time-frame given to us.
 
-To pull/get files off the repo:
-	
-	git pull
+I will likely be extending the program slowly as well.
